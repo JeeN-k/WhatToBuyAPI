@@ -1,32 +1,38 @@
 const express = require('express');
+const verify = require('./verifyToken');
 const router = express.Router()
 const Product = require('../models/Product');
+const ProductList = require('../models/ProductList');
 
-router.get('/', async (req, res) => {
+router.get('/byProductList', verify, async (req, res) => {
     try {
-        const products = await Product.find()
-        res.json(products)
-    } catch (err) {
-        res.json({ message:err })
-    }
+        const products = await Product.find({ owner: req.query.listId });
+        res.status(200).json({ success: true, products })
+    } catch(err) {
+        res.status(400).send({ success: false, message: err })
+    }    
 });
 
-router.post('/', async (req,res) => {
-    const product = new Product({
-        name: req.body.name,
-        category: req.body.category,
-        isBought: req.body.isBought,
-        count: req.body.count
-    })
-    try {
-        const savedProduct = await product.save()
-        res.json(savedProduct)
+router.get('/byId', async (req,res) => {
+    
+})
+
+router.post('/create', verify, async (req,res) => {
+    const product = new Product(req.body)
+    product.owner = req.query.listId
+    
+    try {    
+        await product.save()    
+        const productList = await ProductList.findById(req.query.listId)
+        productList.products.push(productList);
+        await productList.save()
+        res.status(200).send({ success: true, data: product })
     } catch (err) {
-        res.json( { message: err })
+        res.status(400).send({ success: false, message: err })
     }
 })
 
-router.delete('/:productId', async (req, res) => {
+router.delete('/:productId', verify, async (req, res) => {
     try {
         const removedProduct = await Product.deleteOne({ _id: req.params.productId });
         res.json(removedProduct)

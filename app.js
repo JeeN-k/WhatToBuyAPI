@@ -10,9 +10,9 @@ const usersRoute = require('./routes/users');
 
 app.use(bodyParser.json())
 
-app.use('/api/product', productsRoute)
-app.use('/api/productlist', productlistsRoute)
-app.use('/api/user', usersRoute)
+app.use('/api/products', productsRoute)
+app.use('/api/productlists', productlistsRoute)
+app.use('/api/users', usersRoute)
 
 mongoose.connect(process.env.DB_CONNECTION, () => {
     console.log('Connected to DB!')
