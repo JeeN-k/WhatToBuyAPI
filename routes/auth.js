@@ -55,18 +55,18 @@ router.get('/resendMail', verify, async (req,res) => {
 router.post('/signin', verify, async (req,res) => {
     //validate data
     const { error } = loginValidation(req.body);
-    if (error) return res.status(400).send({ message: error.details[0].message })
+    if (error) return res.status(400).send({ success: false, message: error.details[0].message })
     //Check email exist
     const user = await User.findOne({ email: req.body.email })
-    if (!user) return res.status(400).send({ message: 'Email or password wrong' });
+    if (!user) return res.status(400).send({ success: false, message: 'Email or password wrong' });
 
     const validPass = await bcrypt.compare(req.body.password, user.password);
-    if (!validPass) return res.status(400).send({ message: 'Email or password wrong' });
+    if (!validPass) return res.status(400).send({ success: false, message: 'Email or password wrong' });
 
-    if (user.status != 'Active') return res.status(401).send({ message: "Pending account. Please Verify Your Email!" })
+    if (user.status != 'Active') return res.status(401).send({ success: false, message: "Pending account. Please Verify Your Email!" })
 
     const token = jwt.sign({ _id: user._id }, process.env.AUTH_TOKEN)
-    res.status(200).send({ success: true, authToken: token })
+    res.status(200).send({ success: true, message: "Login successfully" authToken: token })
 })
 
 router.get("/confirm/:confirmationCode", async (req,res, next) => {
