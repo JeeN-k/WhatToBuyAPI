@@ -21,7 +21,7 @@ module.exports.sendConfirmationEmail = (name, email, confirmationCode) => {
     html: `<h1>Email Confirmation</h1>
         <h2>Hello ${name}</h2>
         <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-        <a href=${process.env.url}:${process.env.port}/api/auth/confirm/${confirmationCode}> Подтвердить почту</a>
+        <a href=${process.env.url}/api/auth/confirm/${confirmationCode}> Подтвердить почту</a>
         </div>`,
   }).catch(err => console.log(err));
 };

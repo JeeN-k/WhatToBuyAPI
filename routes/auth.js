@@ -3,9 +3,10 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('../config/nodemailer.config');
+const verify = require('./verifyApp');
 const { registerValidation, loginValidation } = require('../validation');
 
-router.post('/signup', async (req,res) => {
+router.post('/signup', verify, async (req,res) => {
 
     //validate data
     const { error } = registerValidation(req.body);
@@ -39,8 +40,9 @@ router.post('/signup', async (req,res) => {
     })
 })
 
-router.get('/resendMail', async (req,res) => {
+router.get('/resendMail', verify, async (req,res) => {
     await User.findOne({ email: req.body.email }).then((user) => {
+        if (!user) return res.status(400).send({ success: false, message: "No user" })
         if (user.status != 'Active') {
             res.status(200).send({ success: true, message: "Message was sent" })
             nodemailer.sendConfirmationEmail(user.name, user.email, user.confirmationCode)
@@ -48,10 +50,9 @@ router.get('/resendMail', async (req,res) => {
             res.status(400).send({ success: false, message: "Email already confirmed."})
         }
     })
-
 })
 
-router.post('/signin', async (req,res) => {
+router.post('/signin', verify, async (req,res) => {
     //validate data
     const { error } = loginValidation(req.body);
     if (error) return res.status(400).send({ message: error.details[0].message })
