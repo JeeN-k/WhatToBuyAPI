@@ -1,5 +1,5 @@
 const express = require('express');
-const verify = require('./verifyToken');
+const verify = require('../middleware/verifyToken');
 const router = express.Router()
 const Product = require('../models/Product');
 const ProductList = require('../models/ProductList');

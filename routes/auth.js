@@ -3,7 +3,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('../config/nodemailer.config');
-const verify = require('./verifyApp');
+const verify = require('../middleware/verifyApp');
 const { registerValidation, loginValidation } = require('../validation');
 
 router.post('/signup', verify, async (req,res) => {
@@ -47,7 +47,7 @@ router.get('/resendMail', verify, async (req,res) => {
             res.status(200).send({ success: true, message: "Message was sent" })
             nodemailer.sendConfirmationEmail(user.name, user.email, user.confirmationCode)
         } else {
-            res.status(400).send({ success: false, message: "Email already confirmed."})
+            res.status(418).send({ success: false, message: "Email already confirmed."})
         }
     })
 })
