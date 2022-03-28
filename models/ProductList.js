@@ -13,7 +13,11 @@ const ProductListSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
-    }
+    },
+    guests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }]
 })
 
 module.exports = mongoose.model('ProductList', ProductListSchema)

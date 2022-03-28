@@ -2,29 +2,31 @@ const mongoose = require('mongoose');
 
 
 const UserSchema = mongoose.Schema({
-    email: {
+    email: String,
+    password: String,
+    name: String,
+    status: {
         type: String,
-        required: true,
-        max: 255,
-        min: 4
+        enum: ['Pending', 'Active'],
+        default: 'Pending'
     },
-    password: {
+    confirmationCode: {
         type: String,
-        required: true,
-        max: 1024,
-        min: 6
-    },
-    name: {
-        type: String,
-        required: true,
-        max: 255, 
-        min: 6
+        unique: true
     },
     date: {
         type: Date,
         default: Date.now
     },
-    productLists: [{
+    productListsOwn: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ProductList"
+    }],
+    productListForeign: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ProductList"
+    }],
+    invites: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "ProductList"
     }]

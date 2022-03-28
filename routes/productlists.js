@@ -5,7 +5,7 @@ const verify = require('./verifyToken');
 
 router.get('/byUser', verify, async (req, res) => {
     try {
-        const productLists = await ProductList.find({owner: req.user});
+        const productLists = await ProductList.find({ owner: req.user });
         res.status(200).json({success: true, productLists})
     } catch(err) {
         res.status(400).send({ success: false, message: err })
@@ -28,13 +28,24 @@ router.post('/new', verify, async (req, res) => {
     try {    
         await productList.save()    
 
-        const user = await User.findById(req.user)
-        user.productLists.push(productList);
+        const user = await User.findById(req.user._id)
+        user.productListsOwn.push(productList);
         await user.save()
         res.status(200).send({ success: true, data: productList})
     } catch (err) {
         res.status(400).send({ success: false, message: err })
     }
+})
+
+router.post('/invite', verify, async(req, res) => {
+    const user = new User.findOne({ email: req.query.email })
+    user.invites.push(req.query.listId)
+    await user.save((err) => {
+        if (err) {
+            res.status(400).send({ message: err })
+        }
+        res.status(200).send({ success: true, message: "Invited" })
+    })
 })
 
 router.patch('/update', verify, async (req, res) => {
