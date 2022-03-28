@@ -66,7 +66,7 @@ router.post('/signin', verify, async (req,res) => {
     if (user.status != 'Active') return res.status(401).send({ success: false, message: "Pending account. Please Verify Your Email!" })
 
     const token = jwt.sign({ _id: user._id }, process.env.AUTH_TOKEN)
-    res.status(200).send({ success: true, message: "Login successfully" authToken: token })
+    res.status(200).send({ success: true, message: "Login successfully", authToken: token })
 })
 
 router.get("/confirm/:confirmationCode", async (req,res, next) => {
