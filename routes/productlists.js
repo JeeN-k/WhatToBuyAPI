@@ -6,7 +6,7 @@ const verify = require('../middleware/verifyToken');
 router.get('/byUser', verify, async (req, res) => {
     try {
         const productLists = await ProductList.find({ $or: [{owner: req.user}, {guests: { $in: req.user }}], isRemoved: false });
-        res.status(200).json({success: true, productLists})
+        res.status(200).json({success: true, data: productLists})
     } catch(err) {
         res.status(400).send({ success: false, message: err })
     }    
@@ -15,7 +15,7 @@ router.get('/byUser', verify, async (req, res) => {
 router.get('/all', async (req, res) => {
     try {
         const productList = await ProductList.find({})
-        res.status(200).json({ success: true, productList })
+        res.status(200).json({ success: true, data: productList })
     } catch(err) {
         res.status(400).send({ success: false, message: err })
     }  
@@ -26,14 +26,14 @@ router.get('/byUserRemoved', verify, async (req, res) => {
         const productLists = await ProductList.find({ owner: req.user, isRemoved: true });
         res.status(200).json({success: true, productLists})
     } catch(err) {
-        res.status(400).send({ success: false, message: err })
+        res.status(400).send({ success: false, data: err })
     }   
 })
 
 router.get('/byId', verify, async (req, res) => {
     try {
         const productList = await ProductList.findOne({ _id: req.query.listID })
-        res.status(200).json({ success: true, productList })
+        res.status(200).json({ success: true, data: productList })
     } catch(err) {
         res.status(400).json({ success: false, message: err })
     }    

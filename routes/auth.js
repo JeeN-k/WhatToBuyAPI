@@ -82,7 +82,7 @@ router.get("/confirm/:confirmationCode", async (req,res, next) => {
                 res.status(500).send({ message: err });
                 return;
             }
-            res.status(200).send("Почта успешно подтверждена!")
+            res.status(200).send("<h1>Почта успешно подтверждена!</h1>")
         })
     })
     .catch((e) => console.log("error", e))

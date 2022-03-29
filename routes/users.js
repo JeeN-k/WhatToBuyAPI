@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const res = require('express/lib/response');
 const User = require('../models/User');
 
 router.get('/userList', async (req, res) => {
@@ -10,8 +11,13 @@ router.get('/userList', async (req, res) => {
     }    
 });
 
-router.delete('/all', async req => {
-    await User.remove({})
+router.delete('/all', async (req, res) => {
+    try {
+        await User.remove({})
+        res.status(200).send("Deleted")
+    } catch (err) {
+        res.status(400).json(err)
+    }
 })
 
 module.exports = router;
