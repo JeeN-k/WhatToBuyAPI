@@ -103,9 +103,9 @@ router.patch('/removeToTrash', verify, async (req,res) => {
     const newValue = { $set: { isRemoved: true }}
     try {
         const update = await ProductList.updateOne({ _id: req.query.listId}, newValue )
-        res.status(200).send({ success: true, update })
+        res.status(200).send({ success: true, message: "List removed to trash" })
     } catch(err) {
-        res.status(400).send({ success: false, err })
+        res.status(400).send({ success: false, message: "Error with removed" })
     }
 })
 
@@ -113,9 +113,9 @@ router.patch('/restoreFromTrash', verify, async(req,res) => {
     const newValue = { $set: { isRemoved: false }}
     try {
         const update = await ProductList.updateOne({ _id: req.query.listId}, newValue )
-        res.status(200).send({ success: true, update })
+        res.status(200).send({ success: true, message: "List restored from trash" })
     } catch(err) {
-        res.status(400).send({ success: false, err })
+        res.status(400).send({ success: false, message: "Error with list restore" })
     }
 })
 
