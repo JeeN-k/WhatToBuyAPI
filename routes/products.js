@@ -6,7 +6,7 @@ const ProductList = require('../models/ProductList');
 
 router.get('/byList', verify, async (req, res) => {
     try {
-        const products = await Product.find({ owner: req.query.listId });
+        const products = await Product.find({ productList: req.query.listId });
         res.status(200).json({ success: true, products })
     } catch(err) {
         res.status(400).send({ success: false, message: err })
