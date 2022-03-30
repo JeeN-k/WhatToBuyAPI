@@ -83,7 +83,7 @@ router.patch('/acceptInvite', verify, async(req, res) => {
     }
 })
 
-router.patch('/:listId', verify, async (req, res) => {
+router.patch('/update/:listId', verify, async (req, res) => {
     const newValues = {
         $set: {
             name: req.body.name,
