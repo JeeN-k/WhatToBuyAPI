@@ -22,7 +22,7 @@ const UserSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "ProductList"
     }],
-    productListForeign: [{
+    productListsForeign: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "ProductList"
     }],

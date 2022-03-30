@@ -39,7 +39,7 @@ router.get('/byId', verify, async (req, res) => {
     }    
 })
 
-router.post('/new', verify, async (req, res) => {
+router.post('/create', verify, async (req, res) => {
     const productList = new ProductList(req.body)
     productList.owner = req.user
     
@@ -68,22 +68,22 @@ router.patch('/invite', verify, async(req, res) => {
 
 router.patch('/acceptInvite', verify, async(req, res) => {   
     try {
-    const user = await User.findById(req.user._id)
-    await user.updateOne(
-        { $pull: { invites: req.query.listId } }
-    )
-    await user.productListForeign.push(req.query.listId)      
-    await user.save()  
-    const productList = await ProductList.findById(req.query.listId)
-    await productList.guests.push(req.user._id)
-    await productList.save()
-    res.status(200).json( {message: "ok"} )
+        const user = await User.findById(req.user._id)
+        await user.updateOne(
+            { $pull: { invites: req.query.listId } }
+        )
+        await user.productListForeign.push(req.query.listId)      
+        await user.save()  
+        const productList = await ProductList.findById(req.query.listId)
+        await productList.guests.push(req.user._id)
+        await productList.save()
+        res.status(200).json( {success: true, message: "Invite accepted"} )
     } catch(err) {
-        console.log(err)
+        res.status(400).json( {success: false, message: err } )
     }
 })
 
-router.patch('/update', verify, async (req, res) => {
+router.patch('/:listId', verify, async (req, res) => {
     const newValues = {
         $set: {
             name: req.body.name,
@@ -92,7 +92,7 @@ router.patch('/update', verify, async (req, res) => {
         }
     }
     try {
-        const update = await ProductList.updateOne({ _id: req.query.listId}, newValues)
+        const update = await ProductList.updateOne({ _id: req.params.listId}, newValues)
         res.status(200).send({ success: true, update })
     } catch(err) {
         res.status(400).send({ success: false, err })
@@ -122,6 +122,7 @@ router.patch('/restoreFromTrash', verify, async(req,res) => {
 router.delete('/:listId', verify, async (req, res) => {
     try {
         await ProductList.findOne({ _id: req.params.listId}, async (err, list) => {
+            if (!list) return res.status(400).json({ success: false, message: "Not found list" })
             return await list.remove(err => {
                 if (!err) { res.status(200).json( { success: true, message: "Deleted"}) }
                 else { res.status(400).json( { message: err }) }

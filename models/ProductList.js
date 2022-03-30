@@ -2,7 +2,10 @@ const mongoose = require('mongoose');
 
 
 const ProductListSchema = mongoose.Schema({
-    name: String,
+    name: {
+        type: String,
+        required: true
+    },
     color: String,
     icon: String,
     isRemoved: {
@@ -26,6 +29,7 @@ const ProductListSchema = mongoose.Schema({
 
 ProductListSchema.pre('remove', async function(next) {
     const User = mongoose.model('User');
+    const Product = mongoose.model('Product');
 
     await User.updateOne(
         { _id: this.owner },
@@ -40,6 +44,10 @@ ProductListSchema.pre('remove', async function(next) {
     await User.updateMany(
         { productListsForeign: { $in: this._id } },
         { $pull: { productListsForeign: this._id } }
+    )
+
+    await Product.deleteMany(
+        { productList: this._id }
     )
 
     await next();
