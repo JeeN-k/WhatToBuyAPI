@@ -24,7 +24,7 @@ router.get('/all', async (req, res) => {
 router.get('/byUserRemoved', verify, async (req, res) => {
     try {
         const productLists = await ProductList.find({ owner: req.user, isRemoved: true });
-        res.status(200).json({success: true, productLists})
+        res.status(200).json({success: true, data: productLists})
     } catch(err) {
         res.status(400).send({ success: false, data: err })
     }   
@@ -60,7 +60,7 @@ router.patch('/invite', verify, async(req, res) => {
     user.invites.push(req.query.listId)
     await user.save((err) => {
         if (err) {
-            res.status(400).send({ message: err })
+            res.status(400).send({ success: false, message: err })
         }
         res.status(200).send({ success: true, message: "Invited" })
     })
@@ -125,11 +125,11 @@ router.delete('/:listId', verify, async (req, res) => {
             if (!list) return res.status(400).json({ success: false, message: "Not found list" })
             return await list.remove(err => {
                 if (!err) { res.status(200).json( { success: true, message: "Deleted"}) }
-                else { res.status(400).json( { message: err }) }
+                else { res.status(400).json( { success: false, message: err }) }
             })
         }).clone()
     } catch(err) {
-        res.status(400).json( { message: err })
+        res.status(400).json( { success: false, message: err })
     }
 })
 
