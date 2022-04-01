@@ -22,6 +22,10 @@ const ProductSchema = mongoose.Schema({
         type: Number,
         default: null
     },
+    price: {
+        type: Float,
+        default: null
+    },
     productList: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "ProductList",
