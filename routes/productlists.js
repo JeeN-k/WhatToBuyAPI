@@ -93,9 +93,9 @@ router.patch('/update/:listId', verify, async (req, res) => {
     }
     try {
         const update = await ProductList.updateOne({ _id: req.params.listId}, newValues)
-        res.status(200).send({ success: true, update })
+        res.status(200).send({ success: true, message: "Successfully updated" })
     } catch(err) {
-        res.status(400).send({ success: false, err })
+        res.status(400).send({ success: false, message: "Error update" })
     }
 })
 
