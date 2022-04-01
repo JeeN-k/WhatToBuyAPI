@@ -56,14 +56,18 @@ router.post('/create', verify, async (req, res) => {
 })
 
 router.patch('/invite', verify, async(req, res) => {
-    const user = await User.findOne({ email: req.query.email })
-    user.invites.push(req.query.listId)
-    await user.save((err) => {
-        if (err) {
-            res.status(400).send({ success: false, message: err })
-        }
-        res.status(200).send({ success: true, message: "Invited" })
-    })
+    try {
+        const user = await User.findOne({ email: req.query.email })
+        user.invites.push(req.query.listId)
+        await user.save((err) => {
+            if (err) {
+                res.status(400).send({ success: false, message: "Error save user" })
+            }
+            res.status(200).send({ success: true, message: "Invited" })
+        })
+    } catch (err) {
+        res.status(400).send({ success: false, message: "Error invite user/User you want to invite not found"})
+    }
 })
 
 router.patch('/acceptInvite', verify, async(req, res) => {   
