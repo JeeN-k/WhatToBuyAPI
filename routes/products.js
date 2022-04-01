@@ -52,20 +52,21 @@ router.post('/create', verify, async (req,res) => {
     }
 })
 
-router.patch('/:productId', verify, async (req,res) => {
+router.patch('/update/:productId', verify, async (req,res) => {
     const newValues = {
         $set: {
             name: req.body.name,
             category: req.body.category,
             note: req.body.note,
-            count: req.body.count    
+            count: req.body.count,
+            price: req.body.price   
         }
     }
     try {
         const update = await Product.updateOne({ _id: req.params.productId}, newValues)
-        res.status(200).send({ success: true, update })
+        res.status(200).send({ success: true, message: "Product updated successfully" })
     } catch(err) {
-        res.status(400).send({ success: false, err })
+        res.status(400).send({ success: false, message: "Error with product updat" })
     }
 })
 
