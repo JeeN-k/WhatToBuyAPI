@@ -39,6 +39,29 @@ router.get('/byId', verify, async (req, res) => {
     }    
 })
 
+const invitesResponse = {
+    id: String,
+    name: String,
+    userName: String,
+}
+
+router.get('/invites', verify, async(req, res) => {
+    try{
+        const user = await User.findById(req.user._id)
+        const productLists = await ProductList.find({ _id: { $in: user.invites}, isRemoved: false });
+        const lists = await Promise.all(productLists.map( async(list) => {
+            const userInvited = await User.findById(list.owner)
+            invitesResponse.id = list.id
+            invitesResponse.name = list.name
+            invitesResponse.userName = userInvited.name
+            return invitesResponse
+        }))
+        res.status(200).send({success: true, data: lists })
+    } catch(err) {
+        res.status(400).send({ success: false, message: err })
+    }
+})
+
 router.post('/create', verify, async (req, res) => {
     const productList = new ProductList(req.body)
     productList.owner = req.user
@@ -58,6 +81,10 @@ router.post('/create', verify, async (req, res) => {
 router.patch('/invite', verify, async(req, res) => {
     try {
         const user = await User.findOne({ email: req.query.email })
+        const invite = user.invites.includes(req.query.listId)
+        const owner = user.productListsOwn.includes(req.query.listId)
+        const guest = user.productListsForeign.includes(req.query.listId)
+        if ((invite) || (owner) || (guest)) return res.status(400).send({ success: false, message: "User already invited or already in list"})
         user.invites.push(req.query.listId)
         await user.save((err) => {
             if (err) {
@@ -76,14 +103,27 @@ router.patch('/acceptInvite', verify, async(req, res) => {
         await user.updateOne(
             { $pull: { invites: req.query.listId } }
         )
-        await user.productListForeign.push(req.query.listId)      
+        await user.productListsForeign.push(req.query.listId)      
         await user.save()  
         const productList = await ProductList.findById(req.query.listId)
         await productList.guests.push(req.user._id)
         await productList.save()
         res.status(200).json( {success: true, message: "Invite accepted"} )
     } catch(err) {
-        res.status(400).json( {success: false, message: err } )
+        res.status(400).json( {success: false, message: "Error invite accept" } )
+    }
+})
+
+router.patch('/refuseInvite', verify, async(req, res) => {
+    try {
+        const user = await User.findById(req.user._id)
+        await user.updateOne(
+            { $pull: { invites: req.query.listId } }
+        )
+        await user.save()
+        res.status(200).json( { success: true, message: "Invite refused" })
+    } catch(err) {
+        res.status(400).json({ success: false, message: "Error invite refuse" })
     }
 })
 

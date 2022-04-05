@@ -31,9 +31,9 @@ router.patch('/bought', verify, async (req, res) =>  {
     }
     try {
         const update = await Product.updateOne({ _id: req.query.productId}, newValues)
-        res.status(200).send({ success: true, update })
+        res.status(200).send({ success: true, message: "Done" })
     } catch(err) {
-        res.status(400).send({ success: false, err })
+        res.status(400).send({ success: false, message: "Error" })
     }
 })
 
