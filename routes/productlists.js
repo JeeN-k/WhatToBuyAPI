@@ -84,16 +84,16 @@ router.patch('/invite', verify, async(req, res) => {
         const invite = user.invites.includes(req.query.listId)
         const owner = user.productListsOwn.includes(req.query.listId)
         const guest = user.productListsForeign.includes(req.query.listId)
-        if ((invite) || (owner) || (guest)) return res.status(400).send({ success: false, message: "User already invited or already in list"})
+        if ((invite) || (owner) || (guest)) return res.status(400).send({ success: false, message: "Пользователю уже отправлено приглашение!"})
         user.invites.push(req.query.listId)
         await user.save((err) => {
             if (err) {
                 res.status(400).send({ success: false, message: "Error save user" })
             }
-            res.status(200).send({ success: true, message: "Invited" })
+            res.status(200).send({ success: true, message: "Приглашение отправлено!" })
         })
     } catch (err) {
-        res.status(400).send({ success: false, message: "Error invite user/User you want to invite not found"})
+        res.status(400).send({ success: false, message: "Ошибка! Пользователь не найден"})
     }
 })
 
@@ -108,9 +108,9 @@ router.patch('/acceptInvite', verify, async(req, res) => {
         const productList = await ProductList.findById(req.query.listId)
         await productList.guests.push(req.user._id)
         await productList.save()
-        res.status(200).json( {success: true, message: "Invite accepted"} )
+        res.status(200).json( {success: true, message: "Приглашение принято!"} )
     } catch(err) {
-        res.status(400).json( {success: false, message: "Error invite accept" } )
+        res.status(400).json( {success: false, message: "Ошибка принятия приглашения!" } )
     }
 })
 
@@ -121,9 +121,9 @@ router.patch('/refuseInvite', verify, async(req, res) => {
             { $pull: { invites: req.query.listId } }
         )
         await user.save()
-        res.status(200).json( { success: true, message: "Invite refused" })
+        res.status(200).json( { success: true, message: "Приглашение отклонено!" })
     } catch(err) {
-        res.status(400).json({ success: false, message: "Error invite refuse" })
+        res.status(400).json({ success: false, message: "Ошибка!" })
     }
 })
 
@@ -137,7 +137,7 @@ router.patch('/update/:listId', verify, async (req, res) => {
     }
     try {
         const update = await ProductList.updateOne({ _id: req.params.listId}, newValues)
-        res.status(200).send({ success: true, message: "Successfully updated" })
+        res.status(200).send({ success: true, message: "Список обновлен!" })
     } catch(err) {
         res.status(400).send({ success: false, message: "Error update" })
     }

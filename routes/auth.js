@@ -34,7 +34,7 @@ router.post('/signup', verify, async (req,res) => {
             return;
         }
 
-        res.status(200).send({ success: true, message: "User was registered successfully! Please check your email" })
+        res.status(200).send({ success: true, message: "Регистрация успешна! Пожалуйста проверьте вашу почту для подтверждения аккаунта!" })
 
         nodemailer.sendConfirmationEmail(user.name, user.email, user.confirmationCode)
     })
@@ -58,15 +58,15 @@ router.post('/signin', verify, async (req,res) => {
     if (error) return res.status(400).send({ success: false, message: error.details[0].message })
     //Check email exist
     const user = await User.findOne({ email: req.body.email })
-    if (!user) return res.status(400).send({ success: false, message: 'Email or password wrong' });
+    if (!user) return res.status(400).send({ success: false, message: 'Почта или пароль неверны' });
 
     const validPass = await bcrypt.compare(req.body.password, user.password);
-    if (!validPass) return res.status(400).send({ success: false, message: 'Email or password wrong' });
+    if (!validPass) return res.status(400).send({ success: false, message: 'Почта или пароль неверны' });
 
-    if (user.status != 'Active') return res.status(401).send({ success: false, message: "Pending account. Please Verify Your Email!" })
+    if (user.status != 'Active') return res.status(401).send({ success: false, message: "Аккаунт неактивирован! Пожалуйста проверьте вашу почту!" })
 
     const token = jwt.sign({ _id: user._id }, process.env.AUTH_TOKEN)
-    res.status(200).send({ success: true, message: "Login successfully", authToken: token })
+    res.status(200).send({ success: true, message: "Вход успешен", userData: user, authToken: token })
 })
 
 router.get("/confirm/:confirmationCode", async (req,res, next) => {
